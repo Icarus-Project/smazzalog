@@ -19,39 +19,34 @@ user = sys.argv[2]
 
 def ricerca(date,user):
 	i = datetime.datetime.today()
-	path="/opt/zimbra-backup/logArchive/rt-mail-mlst00-p1.rt.tix.it/"
+	path="" #Path dei log
 	anno, mese, giorno = date.split("-")	
 	 
-	#anno = int(anno)
-	#mese = int(mese)
-	#giorno = int(giorno)
-
 	data = datetime.datetime(int(anno),int(mese),int(giorno))
 	delta = i - data
 	
-	print("Sono nella funzione")
 	
 	if delta.days > 1:
 		print("Estraggo log")
-		os.popen('zgrep "postfix/smtpd" '+path+str(anno)+'/'+str(mese)+'/'+str(giorno)+'/zimbra.log.1.gz| grep '+user+' | grep "RCPT from" | grep -v NOQUEUE | grep -v lost | grep -v error > log')
+		os.popen('zgrep "postfix/smtpd" '+path+str(anno)+'/'+str(mese)+'/'+str(giorno)+'/log.1.gz| grep '+user+' | grep "RCPT from" | grep -v NOQUEUE | grep -v lost | grep -v error > log')
 		print("Log Estratto")
 	elif data.date() == i.date():
 		print("Estraggo log")
-		os.popen('grep "postfix/smtpd" /var/log/zimbra.log | grep '+user+' | grep "RCPT from" | grep -v NOQUEUE | grep -v lost | grep -v error > log')
+		os.popen('grep "postfix/smtpd" /var/log/log | grep '+user+' | grep "RCPT from" | grep -v NOQUEUE | grep -v lost | grep -v error > log')
 		print("Log Estratto")
 	elif delta.days == 1:# and delta.seconds > 1 :
 		print("Estraggo log")
-		os.popen('zgrep "postfix/smtpd" /var/log/zimbra.log.1.gz | grep '+user+' | grep "RCPT from" | grep -v NOQUEUE | grep -v lost | grep -v error > log')
+		os.popen('zgrep "postfix/smtpd" /var/log/log.1.gz | grep '+user+' | grep "RCPT from" | grep -v NOQUEUE | grep -v lost | grep -v error > log')
 		print("Log Estratto")
 	else:
 		print("Impossibile selezionare log futuri")
 		sys.exit()
 
 def ricerca_wild(date,user):
-	path="/opt/zimbra-backup/logArchive/rt-mail-mlst00-p1.rt.tix.it/"
+	path=""
 	anno, mese, giorno = date.split("-")
 	print("Estraggo log")
-	os.popen('zgrep "postfix/smtpd" '+path+str(anno)+'/'+str(mese)+'/'+str(giorno)+'/zimbra.log.1.gz| grep '+user+' | grep "RCPT from" | grep -v NOQUEUE | grep -v lost | grep -v error > log')
+	os.popen('zgrep "postfix/smtpd" '+path+str(anno)+'/'+str(mese)+'/'+str(giorno)+'/log.1.gz| grep '+user+' | grep "RCPT from" | grep -v NOQUEUE | grep -v lost | grep -v error > log')
 	print("Log Estratto")
 		
 #Intro
@@ -63,7 +58,7 @@ Tabella formato csv
 ''')
 print('********************************************************************')
 
-path="/opt/zimbra-backup/logArchive/rt-mail-mlst00-p1.rt.tix.it/"
+path=""
 if len(sys.argv[1]) <= 10 and len(sys.argv[1]) > 2:
 	date = data_log
 	print("Selezionato il log utente: "+user+" alla data del :"+date)
@@ -104,8 +99,7 @@ print('Inizio ricerca su log')
 
 #Ricerca Regex su Log
 for line in log:
-	#group_mta = mta_re.findall(line)
-	#group_postfix = daemon_postfix_re.findall(line)
+
 	
 	data_ora = data_ora_re.findall(line)
 	data_ora = str(data_ora)
@@ -127,12 +121,9 @@ for line in log:
 	helo = helo_re.findall(line)
 	helo = str(helo)
 	helo = helo[8:-3]
-   
-
-	#case = group_postfix
-	#case = str(case)    
 
 	stack.append([str(data_ora+IDF),str(from_server+IDF), str(m_from+IDF), str(m_to+IDF), str(helo)])
+	#Scrive su una riga le informazioni in forma tabulare csv diviso da ;
 
 		
 print("Scrivo i risultati sul csv")
